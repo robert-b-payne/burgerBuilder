@@ -25,7 +25,7 @@ class BurgerBuilder extends Component {
     // totalPrice: BASE_PRICE,
     // purchasable: false,
     showModal: false,
-    modalState: "order_summary"
+    modalState: "order_summary",
     //modalStates:
     // loading
     // order_complete
@@ -33,10 +33,12 @@ class BurgerBuilder extends Component {
     // ingredientsLoaded: false,
     // ingredientsLoaded: true, //temporarily set to true to bypass axios
     // loadIngredientsError: false    //moved to redux
+    someState: 1
   };
 
   componentDidMount() {
     console.log("starting componentDidMount...");
+    console.log(this.state.resetBurger);
     // axios
     //   .get("/ingredients.json")
     //   .then(res => {
@@ -45,12 +47,26 @@ class BurgerBuilder extends Component {
     //     this.setState({ ingredients: res.data, ingredientsLoaded: true });
     //   })
     //   .catch(err => {
-    //     console.log(err);
+    //     console.log(err);ingredients: res.data, ingredientsLoaded: true
     //     this.setState({ loadIngredientsError: err.message });
     //   });
     // this.props.setIngredients({ salad: 0, bacon: 0, cheese: 0, meat: 0 });
-    this.props.initIngredients();
-    console.log("finished componentDidMount!");
+    if (this.state.someState) {
+      this.setState({ someState: 555 }, () => {
+        console.log("someState: " + this.state.someState);
+      });
+    }
+    if (this.props.resetBurger) {
+      console.log("resetting burger . . .");
+      this.props.initIngredients();
+      this.props.resetPrice();
+      this.props.setResetState(false);
+      console.log("post reset state");
+      console.log(this.props.resetBurger);
+      console.log(this.props);
+    }
+    console.log("end of componentDidMount");
+    console.log(this.props);
   }
 
   updatePurchaseState(updatedPrice) {
@@ -222,9 +238,10 @@ class BurgerBuilder extends Component {
 }
 
 const mapStateToProps = state => ({
-  totalPrice: state.totalPrice,
-  ingredients: state.ingredients,
-  loadIngredientsError: state.loadIngredientsError
+  totalPrice: state.burgerBuilder.totalPrice,
+  ingredients: state.burgerBuilder.ingredients,
+  loadIngredientsError: state.burgerBuilder.loadIngredientsError,
+  resetBurger: state.burgerBuilder.resetBurger
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -232,12 +249,18 @@ const mapDispatchToProps = dispatch => ({
     dispatch(burgerBuilderActions.addIngredient(ingredientName, price)),
   removeIngredientHandler: (ingredientName, price) =>
     dispatch(burgerBuilderActions.removeIngredient(ingredientName, price)),
-  initIngredients: () => dispatch(burgerBuilderActions.initIngredients)
-
-  //temp
-  // setIngredients: ingredients =>
-  //   dispatch(burgerBuilderActions.setIngredients(ingredients))
+  initIngredients: () => dispatch(burgerBuilderActions.initIngredients()),
+  resetPrice: () => dispatch(burgerBuilderActions.resetPrice()),
+  setResetState: val => dispatch(burgerBuilderActions.setResetState(val))
 });
+
+// const mapDispatchToProps = dispatch => {
+//     return {
+//         onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
+//         onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
+//         onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
+//     }
+// }
 
 export default connect(
   mapStateToProps,

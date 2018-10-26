@@ -7,7 +7,8 @@ export const BASE_PRICE = 4;
 const initialState = {
   ingredients: null,
   totalPrice: BASE_PRICE,
-  loadIngredientsError: false
+  loadIngredientsError: false,
+  resetBurger: true
   // ingredientsLoaded: falsesf
 };
 
@@ -37,15 +38,36 @@ const setIngredients = (state, action) => {
   console.log("setIngredients action dispatched!");
   return {
     ...state,
-    ingredients: action.ingredients
+    ingredients: {
+      salad: action.ingredients.salad,
+      bacon: action.ingredients.bacon,
+      cheese: action.ingredients.cheese,
+      meat: action.ingredients.meat
+    },
+    loadIngredientsError: false
     // ingredientsLoaded: true
+  };
+};
+
+const resetPrice = (state, action) => {
+  console.log("resetting price . . .");
+  return {
+    ...state,
+    totalPrice: BASE_PRICE
   };
 };
 
 const fetchIngredientsFailed = (state, action) => {
   return {
     ...state,
-    loadIngredientsError: false
+    loadIngredientsError: true
+  };
+};
+
+const setResetState = (state, action) => {
+  return {
+    ...state,
+    resetBurger: action.val
   };
 };
 
@@ -65,6 +87,10 @@ const reducer = (state = initialState, action) => {
       return setIngredients(state, action);
     case actionTypes.FETCH_INGREDIENTS_FAILED:
       return fetchIngredientsFailed(state, action);
+    case actionTypes.RESET_PRICE:
+      return resetPrice(state, action);
+    case actionTypes.SET_RESET_STATE:
+      return setResetState(state, action);
 
     default:
       return state;

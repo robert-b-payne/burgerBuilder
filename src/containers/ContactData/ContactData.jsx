@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import Button from "../../components/UI/Button/Button";
 import classes from "./ContactData.css";
-import axios from "../../axios-orders";
+// import axios from "../../axios-orders";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import Input from "../../components/UI/Input/Input";
+import { connect } from "react-redux";
+// import order from "../../components/Order/Order";
+import * as orderActions from "../../store/actions/index";
 
 class ContactData extends Component {
   state = {
@@ -116,7 +119,7 @@ class ContactData extends Component {
         touched: false
       }
     },
-    loading: false,
+    // loading: false,
     formValid: false
   };
 
@@ -181,35 +184,45 @@ class ContactData extends Component {
     //   }
     // }
 
-    this.setState({ loading: true });
+    // this.setState({ loading: true });
     const orderForm = {};
     for (let key in this.state.orderForm) {
       orderForm[key] = this.state.orderForm[key].value;
     }
     console.log("orderHandler!111111");
-    axios
-      .post("/orders.json", {
-        ingredients: this.props.ingredients,
-        price: parseFloat(this.props.totalPrice).toFixed(2),
-        order_info: orderForm
-      })
-      .then(res => {
-        if (res) {
-          console.log("response!");
-          console.log(res);
-          this.setState({ loading: false });
-          this.props.history.push("/");
-          // this.setState({ modalState: "order_complete" });
-        } else {
-          // this.setState({ showModal: false, modalState: "order_summary" });
-          this.setState({ loading: false });
-          this.props.history.push("/");
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        // this.setState({ showModal: false, modalState: "order_summary" });
-      });
+    // this.props.setResetState(true);
+    this.props.submitOrder(
+      this.props.ingredients,
+      this.props.price,
+      orderForm,
+      this.props.history
+    );
+    // this.setState({ loading: false });
+    // this.props.setResetState(true);
+
+    // axios
+    //   .post("/orders.json", {
+    //     ingredients: this.props.ingredients,
+    //     price: parseFloat(this.props.totalPrice).toFixed(2),
+    //     order_info: orderForm
+    //   })
+    //   .then(res => {
+    //     if (res) {
+    //       console.log("response!");
+    //       console.log(res);
+    //       this.setState({ loading: false });
+    //       this.props.history.push("/");
+    //       // this.setState({ modalState: "order_complete" });
+    //     } else {
+    //       // this.setState({ showModal: false, modalState: "order_summary" });
+    //       this.setState({ loading: false });
+    //       this.props.history.push("/");
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //     // this.setState({ showModal: false, modalState: "order_summary" });
+    //   });
   };
 
   changeHandler = (event, id) => {
@@ -296,7 +309,7 @@ class ContactData extends Component {
     console.log("inputComponentsArray: ");
     console.log(inputComponentsArray);
 
-    let form = this.state.loading ? (
+    let form = this.props.loading ? (
       <Spinner />
     ) : (
       <form>
@@ -323,4 +336,21 @@ class ContactData extends Component {
   }
 }
 
-export default ContactData;
+const mapStateToProps = state => ({
+  // loading: state.order.loading,
+  orderError: state.orderError,
+  ingredients: state.burgerBuilder.ingredients,
+  price: state.burgerBuilder.totalPrice,
+  loading: state.order.loading
+});
+
+const mapDispatchToProps = dispatch => ({
+  submitOrder: (ingredients, price, orderForm, history) =>
+    dispatch(orderActions.submitOrder(ingredients, price, orderForm, history)),
+  setResetState: val => dispatch(orderActions.setResetState(val))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ContactData);

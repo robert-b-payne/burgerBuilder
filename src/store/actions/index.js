@@ -1,5 +1,9 @@
 export {
   addIngredient,
   removeIngredient,
-  initIngredients
+  initIngredients,
+  resetPrice,
+  setResetState
 } from "./burgerBuilder";
+
+export { submitOrder, fetchOrders } from "./order";

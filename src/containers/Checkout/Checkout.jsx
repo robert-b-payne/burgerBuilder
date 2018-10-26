@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CheckoutSummary from "../../components/Order/CheckoutSummary/CheckoutSummary";
 import axios from "../../axios-orders";
 import withExceptionHandler from "../../hoc/withErrorHandler/withErrorHandler";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import ContactData from "../ContactData/ContactData";
 import { connect } from "react-redux";
 
@@ -18,50 +18,21 @@ class Checkout extends Component {
     this.props.history.push("/checkout/contact-data");
   };
 
-  // checkoutHandler = () => {
-  //   // this.setState({ modalState: "loading" });
-  //   axios
-  //     .post("/orders.json", {
-  //       ingredients: this.state.ingredients,
-  //       price: this.state.totalPrice.toFixed(2)
-  //     })
-  //     .then(res => {
-  //       if (res) {
-  //         console.log("response!");
-  //         console.log(res);
-  //         // this.setState({ modalState: "order_complete" });
-  //       } else {
-  //         // this.setState({ showModal: false, modalState: "order_summary" });
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       // this.setState({ showModal: false, modalState: "order_summary" });
-  //     });
-  // };
-
-  // componentDidMount() {
-
-  //   //  EXTRACT INGREDIENTS FROM QUERY STRING
-  //   const query = new URLSearchParams(this.props.location.search);
-  //   let totalPrice;
-  //   let ingredients = {};
-  //   for (let i of query.entries()) {
-  //     if (i[0] === "totalPrice") {
-  //       totalPrice = i[1];
-  //     } else ingredients[i[0]] = +i[1];
-  //   }
-  //   this.setState({ ingredients: ingredients, totalPrice: totalPrice });
-  // }
   render() {
+    let summary = this.props.ingredients ? (
+      <CheckoutSummary
+        ingredients={this.props.ingredients}
+        // clicked={this.cancelOrderHandler}
+        cancelOrderHandler={this.cancelOrderHandler}
+        checkoutContinueHandler={this.checkoutContinueHandler}
+      />
+    ) : (
+      <Redirect to="/" />
+    );
+
     return (
       <div>
-        <CheckoutSummary
-          ingredients={this.props.ingredients}
-          // clicked={this.cancelOrderHandler}
-          cancelOrderHandler={this.cancelOrderHandler}
-          checkoutContinueHandler={this.checkoutContinueHandler}
-        />
+        {summary}
         <Route
           path={this.props.match.path + "/contact-data"}
           render={props => (
@@ -78,8 +49,8 @@ class Checkout extends Component {
 }
 
 const mapStateToProps = state => ({
-  totalPrice: state.totalPrice,
-  ingredients: state.ingredients
+  totalPrice: state.burgerBuilder.totalPrice,
+  ingredients: state.burgerBuilder.ingredients
 });
 
 export default connect(mapStateToProps)(withExceptionHandler(Checkout, axios));

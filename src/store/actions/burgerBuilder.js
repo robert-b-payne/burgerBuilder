@@ -24,6 +24,10 @@ export const setIngredients = ingredients => ({
   ingredients: ingredients
 });
 
+export const resetPrice = price => ({
+  type: actionTypes.RESET_PRICE
+});
+
 export const fetchIngredientsFailed = () => ({
   type: actionTypes.FETCH_INGREDIENTS_FAILED
 });
@@ -31,26 +35,38 @@ export const fetchIngredientsFailed = () => ({
 export const initIngredients = () => {
   console.log("fetching ingredients...");
   return dispatch => {
-    // axios
-    //   .get("/ingredients.json")
-    //   .then(res => {
-    //     console.log("ingredients fetched!");
-    //     console.log("res.data: ");
-    //     console.log(res.data);
-    //     // this.setState({ ingredients: res.data, ingredientsLoaded: true });
-    //     dispatch(setIngredients(res.data));
-    //   })
-    //   .catch(err => {
-    //     console.log("failed to fetch ingredients!");
-    //     console.log(err);
-    //     dispatch(fetchIngredientsFailed());
-    //   });
-    console.log("dispatch called");
-    dispatch(setIngredients({ salad: 0, bacon: 0, cheese: 0, meat: 0 }));
-
-    // setTimeout(() => {
-    //   console.log("setting ingredients!");
-    //   dispatch(setIngredients({ salad: 0, bacon: 0, cheese: 0, meat: 0 }));
-    // }, 3000);
+    console.log("async action dispatched!");
+    axios
+      .get("/ingredients.json")
+      .then(res => {
+        console.log("ingredients fetched!");
+        console.log("res.data: ");
+        console.log(res.data);
+        // this.setState({ ingredients: res.data, ingredientsLoaded: true });
+        dispatch(setIngredients(res.data));
+      })
+      .catch(err => {
+        console.log("failed to fetch ingredients!");
+        console.log(err);
+        dispatch(fetchIngredientsFailed());
+      });
   };
 };
+
+export const setResetState = val => {
+  return { type: actionTypes.SET_RESET_STATE, val: val };
+};
+
+// export const initIngredients = () => {
+//   return dispatch => {
+//     console.log("async action dispatched!");
+//     axios
+//       .get("https://react-my-burger.firebaseio.com/ingredients.json")
+//       .then(response => {
+//         dispatch(setIngredients(response.data));
+//       })
+//       .catch(error => {
+//         dispatch(fetchIngredientsFailed());
+//       });
+//   };
+// };
