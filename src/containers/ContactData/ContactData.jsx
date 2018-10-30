@@ -7,6 +7,7 @@ import Input from "../../components/UI/Input/Input";
 import { connect } from "react-redux";
 // import order from "../../components/Order/Order";
 import * as orderActions from "../../store/actions/index";
+import checkValidity from "../../utility/checkValidity";
 
 class ContactData extends Component {
   state = {
@@ -129,26 +130,26 @@ class ContactData extends Component {
     console.log(parseFloat(this.props.totalPrice).toFixed(2));
   }
 
-  checkValidity = (value, validation) => {
-    if (validation.required) {
-      for (let key in validation.rules) {
-        switch (key) {
-          case "minLength":
-            if (value.length < validation.rules.minLength) return false;
-            break;
-          case "maxLength":
-            if (value.length > validation.rules.maxLength) return false;
-            break;
-          case "length":
-            if (value.length !== validation.rules.length) return false;
-            break;
-          default:
-            return false;
-        }
-      }
-    }
-    return true;
-  };
+  //  checkValidity = (value, validation) => {
+  //     if (validation.required) {
+  //       for (let key in validation.rules) {
+  //         switch (key) {
+  //           case "minLength":
+  //             if (value.length < validation.rules.minLength) return false;
+  //             break;
+  //           case "maxLength":
+  //             if (value.length > validation.rules.maxLength) return false;
+  //             break;
+  //           case "length":
+  //             if (value.length !== validation.rules.length) return false;
+  //             break;
+  //           default:
+  //             return false;
+  //         }
+  //       }
+  //     }
+  //     return true;
+  //   };
 
   orderHandler = event => {
     // this.setState({ modalState: "loading" });
