@@ -3,6 +3,10 @@ import React, { Component } from "react";
 import Input from "../../components/UI/Input/Input";
 import Button from "../../components/UI/Button/Button";
 import checkValidity from "../../utility/checkValidity";
+import Spinner from "../../components/UI/Spinner/Spinner";
+import classes from "./auth.css";
+import * as actions from "../../store/actions/index";
+import { connect } from "react-redux";
 
 class Auth extends Component {
   state = {
@@ -42,7 +46,9 @@ class Auth extends Component {
         touched: false
       }
     },
-    formValid: false
+    formValid: false,
+    loading: false,
+    login: false
   };
 
   changeHandler = (event, id) => {
@@ -51,7 +57,7 @@ class Auth extends Component {
     let updatedForm = JSON.parse(JSON.stringify(this.state.controls));
     updatedForm[id].value = event.target.value;
 
-    if (this.checkValidity(updatedForm[id].value, updatedForm[id].validation)) {
+    if (checkValidity(updatedForm[id].value, updatedForm[id].validation)) {
       updatedForm[id].validation.valid = true;
     } else updatedForm[id].validation.valid = false;
 
@@ -74,21 +80,35 @@ class Auth extends Component {
     }
 
     this.setState({ controls: updatedForm, formValid: formValid_temp });
+  };
 
-    // let objCopy = JSON.parse(JSON.stringify(this.state.state.controls));
-    // if (updatedForm[id].touched) {
-    //   if (
-    //     !this.checkValidity(
-    //       updatedForm[id].value,
-    //       updatedForm[id].validation
-    //     )
-    //   ) {
-    //     updatedForm[id].validation.valid = true;
-    //   } else objCopy[id].validation.valid = false;
-    //   this.setState({ state.controls: objCopy });
-    // }
+  focusHandler = id => {
+    console.log("focus handler called for " + id);
+    // let objCopy = { ...this.state.orderForm };
+    // let nestedObject = { ...objCopy[id] };
+    // nestedObject.touched = true;
+    // objCopy[id] = nestedObject;
+    // this.setState({ orderForm: objCopy });
+  };
 
-    // this.setState({ state.controls: updatedForm });
+  submitHandler = event => {
+    console.log("submitHandler . . .");
+    event.preventDefault();
+    if (this.state.login) {
+      this.props.login(
+        this.state.controls.email.value,
+        this.state.controls.password.value
+      );
+    } else {
+      this.props.auth(
+        this.state.controls.email.value,
+        this.state.controls.password.value
+      );
+    }
+  };
+
+  changeState = () => {
+    this.setState({ login: !this.state.login });
   };
 
   render() {
@@ -115,11 +135,33 @@ class Auth extends Component {
       );
     });
     return (
-      <div>
-        <form />
+      <div className={classes.auth}>
+        <form onSubmit={this.submitHandler}>
+          {inputComponentsArray}
+          <Button
+            btnType="Success"
+            clicked={this.orderHandler}
+            disabled={!this.state.formValid}
+          >
+            {this.state.login ? "Login" : "Create New Account"}
+          </Button>
+        </form>
+        <Button btnType="Danger" clicked={this.changeState}>
+          Switch to {this.state.login ? "Create New Account" : "Login"}
+        </Button>
       </div>
     );
   }
 }
 
-export default Auth;
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch => ({
+  auth: (email, password) => dispatch(actions.auth(email, password)),
+  login: (email, password) => dispatch(actions.login(email, password))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Auth);

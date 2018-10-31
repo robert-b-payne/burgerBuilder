@@ -1,5 +1,6 @@
 const checkValidity = (value, validation) => {
   if (validation.required) {
+    let pattern;
     for (let key in validation.rules) {
       switch (key) {
         case "minLength":
@@ -11,6 +12,13 @@ const checkValidity = (value, validation) => {
         case "length":
           if (value.length !== validation.rules.length) return false;
           break;
+        case "isEmail":
+          pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+          return pattern.test(value);
+        case "isNumeric":
+          pattern = /^\d+$/;
+          return pattern.test(value);
+
         default:
           return false;
       }

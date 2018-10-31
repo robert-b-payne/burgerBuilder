@@ -60,7 +60,8 @@ class ContactData extends Component {
           required: true,
           valid: false,
           rules: {
-            length: 5
+            length: 5,
+            isNumeric: true
           }
         },
         touched: false
@@ -96,7 +97,8 @@ class ContactData extends Component {
           valid: false,
           rules: {
             minLength: 3,
-            maxLength: 15
+            maxLength: 15,
+            isEmail: true
           }
         },
         touched: false
@@ -232,7 +234,7 @@ class ContactData extends Component {
     let updatedForm = JSON.parse(JSON.stringify(this.state.orderForm));
     updatedForm[id].value = event.target.value;
 
-    if (this.checkValidity(updatedForm[id].value, updatedForm[id].validation)) {
+    if (checkValidity(updatedForm[id].value, updatedForm[id].validation)) {
       updatedForm[id].validation.valid = true;
     } else updatedForm[id].validation.valid = false;
 

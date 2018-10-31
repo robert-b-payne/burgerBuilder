@@ -7,3 +7,5 @@ export {
 } from "./burgerBuilder";
 
 export { submitOrder, fetchOrders } from "./order";
+
+export { auth, login } from "./auth";
