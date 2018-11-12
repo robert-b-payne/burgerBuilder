@@ -1,7 +1,8 @@
 import * as actionTypes from "./actionTypes";
 import axios from "axios";
 
-const API_KEY = "AIzaSyATD4XZ-2Ly3bqhcjSYmkgRGkm4Cj2DxeY";
+// const API_KEY = "AIzaSyATD4XZ-2Ly3bqhcjSYmkgRGkm4Cj2DxeY";   //kangaroofromchina
+const API_KEY = "AIzaSyAMtBA6w450h8KTTdZ5XGDDgV1t5mP4d0M"; //superburgerbuilder
 
 export const authStart = () => {
   return {
@@ -9,10 +10,11 @@ export const authStart = () => {
   };
 };
 
-export const authSuccess = authData => {
+export const authSuccess = (idToken, localId) => {
   return {
     type: actionTypes.AUTH_SUCCESS,
-    authData: authData
+    idToken: idToken,
+    localId: localId
   };
 };
 
@@ -23,51 +25,51 @@ export const authFailure = error => {
   };
 };
 
-export const auth = (email, password) => {
+export const setUserName = userName => {
+  return {
+    type: actionTypes.SET_USERNAME,
+    userName: userName
+  };
+};
+
+//login
+export const auth = (email, password, login, history) => {
   return dispatch => {
     dispatch(authStart());
+    let url = login
+      ? `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${API_KEY}` // login path
+      : `https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=${API_KEY}`; // create new account path
     axios
-      .post(
-        `https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=${API_KEY}`,
-        { email: email, password: password, returnSecureToken: true }
-      )
-      .then(response => {
-        console.log("authentication complete!");
-        console.log(response.data);
-        dispatch(authSuccess(response.data));
+      .post(url, { email: email, password: password, returnSecureToken: true })
+      .then(res => {
+        login
+          ? console.log("login statuscode: 200")
+          : console.log("registration statuscode: 200");
+        console.log(res);
+        console.log(`expiresIn ${res.data.expiresIn}`);
+        dispatch(authSuccess(res.data.idToken, res.data.localId));
+        dispatch(checkAuth(res.data.expiresIn));
+        dispatch(setUserName(email));
+        history.push("/");
       })
-      .catch(error => {
-        console.log("auth failed!");
-        console.log(error.response.data.error.message);
-        dispatch(authFailure(error));
+      .catch(err => {
+        login ? console.log("login error") : console.log("registration error");
+        console.log(err);
+        console.log(err.response.data.error);
+        dispatch(authFailure(err.response.data.error));
       });
   };
 };
 
-export const loginSuccess = data => ({
-  type: actionTypes.LOGIN_SUCCESS,
-  loginData: data
+export const logout = () => ({
+  type: actionTypes.LOGOUT
 });
 
-export const loginFailure = err => ({
-  type: actionTypes.LOGIN_FAILURE,
-  loginError: err
-});
-
-export const login = (email, password) => {
+export const checkAuth = expiresIn => {
   return dispatch => {
-    axios
-      .post(
-        `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${API_KEY}`,
-        { email: email, password: password, returnSecureToken: true }
-      )
-      .then(res => {
-        console.log(res.data);
-        dispatch(loginSuccess(res));
-      })
-      .catch(err => {
-        console.log(err.data);
-        dispatch(loginFailure(err));
-      });
+    setTimeout(() => {
+      dispatch(logout());
+    }, expiresIn * 1000); //expirationTime seconds * 1000 miliseconds
+    //30 seconds
   };
 };

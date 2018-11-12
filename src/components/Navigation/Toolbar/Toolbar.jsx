@@ -8,12 +8,12 @@ const toolbar = props => {
   return (
     <header className={classes.Toolbar}>
       <ToggleButton toggleHandler={props.toggleHandler} />
-      <div>MENU</div>
+      {/* <div>MENU</div> */}
       <div className={classes.Logo}>
         <Logo />
       </div>
       <nav className={classes.DesktopOnly}>
-        <NavigationItems />
+        <NavigationItems isAuthenticated={props.isAuthenticated} />
       </nav>
     </header>
   );

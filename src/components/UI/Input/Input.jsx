@@ -68,23 +68,29 @@ const input = props => {
       );
   }
 
-  let rules = [];
-  for (let key in props.validation.rules) {
-    rules.push(
-      <span style={{ color: "red", marginLeft: "5px" }}>
-        {key}: {props.validation.rules[key]}
-      </span>
-    );
-  }
+  // let rules = [];
+  // for (let key in props.validation.rules) {
+  //   rules.push(
+  //     <span style={{ color: "red", marginLeft: "5px" }}>
+  //       {key}: {props.validation.rules[key]}
+  //     </span>
+  //   );
+  // }
+
+  let errorMessage = (
+    <span style={{ color: "red", marginLeft: "5px" }}>
+      {props.validation.errorMessage}
+    </span>
+  );
 
   let validationSymbol;
   if (props.touched) {
     validationSymbol = props.validation.valid ? (
-      <span class={classes.ValidationSymbol} style={{ color: "green" }}>
+      <span className={classes.ValidationSymbol} style={{ color: "green" }}>
         &#x2714;
       </span>
     ) : (
-      <span class={classes.ValidationSymbol} style={{ color: "red" }}>
+      <span className={classes.ValidationSymbol} style={{ color: "red" }}>
         &#x2715;
       </span>
     );
@@ -93,7 +99,7 @@ const input = props => {
   return (
     <div className={classes.Input}>
       <label className={classes.Label}>{props.label}</label>
-      {!props.validation.valid && props.touched ? rules : null}
+      {!props.validation.valid && props.touched ? errorMessage : null}
       <div style={{ position: "relative" }}>
         {inputElement}
         {props.elementType !== "select" ? validationSymbol : null}

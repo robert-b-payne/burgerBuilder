@@ -30,6 +30,7 @@ class BurgerBuilder extends Component {
     // loading
     // order_complete
     // order_summary
+
     // ingredientsLoaded: false,
     // ingredientsLoaded: true, //temporarily set to true to bypass axios
     // loadIngredientsError: false    //moved to redux
@@ -106,7 +107,9 @@ class BurgerBuilder extends Component {
   // };
 
   orderHandler = () => {
-    this.setState({ showModal: true, modalState: "order_summary" });
+    if (this.props.isAuthenticated)
+      this.setState({ showModal: true, modalState: "order_summary" });
+    else this.props.history.push("/login");
   };
 
   backdropHandler = () => {
@@ -210,6 +213,7 @@ class BurgerBuilder extends Component {
                 INGREDIENT_PRICES[ingredientName]
               )
             }
+            isAuthenticated={this.props.isAuthenticated}
             ingredients={this.props.ingredients}
             totalPrice={this.props.totalPrice.toFixed(2)}
             purchasable={this.updatePurchaseState(this.props.totalPrice)}
@@ -241,7 +245,8 @@ const mapStateToProps = state => ({
   totalPrice: state.burgerBuilder.totalPrice,
   ingredients: state.burgerBuilder.ingredients,
   loadIngredientsError: state.burgerBuilder.loadIngredientsError,
-  resetBurger: state.burgerBuilder.resetBurger
+  resetBurger: state.burgerBuilder.resetBurger,
+  isAuthenticated: state.auth.idToken !== null
 });
 
 const mapDispatchToProps = dispatch => ({

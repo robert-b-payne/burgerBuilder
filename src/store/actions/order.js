@@ -16,15 +16,28 @@ export const setLoading = val => ({
   val: val
 });
 
-export const submitOrder = (ingredients, price, orderForm, history) => {
+export const submitOrder = (
+  ingredients,
+  price,
+  orderForm,
+  history,
+  idToken,
+  userName
+) => {
   console.log("submitOrder dispatched!");
+
   return dispatch => {
     dispatch(setLoading(true));
+    console.log("submitOrder . . . ! ! !");
+    console.log("idToken:");
+    console.log(idToken);
     axios
-      .post("/orders.json", {
+      .post(`/orders.json?auth=${idToken}`, {
         ingredients: ingredients,
         price: parseFloat(price).toFixed(2),
-        order_info: orderForm
+        order_info: orderForm,
+        date: new Date().toString(),
+        userName: userName
       })
       .then(res => {
         if (res) {
@@ -32,16 +45,6 @@ export const submitOrder = (ingredients, price, orderForm, history) => {
           console.log("response!");
           console.log(res);
           dispatch(purchaseBurgerSuccess());
-          dispatch(setResetState(true));
-          console.log("history: ");
-          console.log(history);
-          history.push("/");
-          dispatch(setLoading(false));
-        } else {
-          console.log(
-            "submitOrder async dispatched succeeded with no response!"
-          );
-          dispatch(purchaseBurgerFailure());
           dispatch(setResetState(true));
           console.log("history: ");
           console.log(history);
@@ -67,11 +70,14 @@ const fetchOrdersFailure = error => ({
   error: error
 });
 
-export const fetchOrders = () => {
+export const fetchOrders = token => {
   return dispatch => {
+    console.log("fetchOrders: ");
+    console.log("idToken: ");
+    console.log(token);
     dispatch(setFetchOrdersLoading(true));
     axios
-      .get("/orders.json")
+      .get("/orders.json?auth=" + token)
       .then(res => {
         console.log("fetchOrders async dispatched successfully!");
         console.log("response!");

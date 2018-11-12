@@ -8,4 +8,4 @@ export {
 
 export { submitOrder, fetchOrders } from "./order";
 
-export { auth, login } from "./auth";
+export { auth, logout } from "./auth";

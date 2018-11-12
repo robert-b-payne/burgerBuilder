@@ -5,6 +5,7 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import { connect } from "react-redux";
 import * as actions from "../../store/actions/index";
+import { Redirect } from "react-router-dom";
 
 class Orders extends Component {
   // state = { loading: false };
@@ -22,33 +23,59 @@ class Orders extends Component {
     //     console.log(err);
     //     this.setState({ loading: false });
     //   });
-    this.props.fetchOrders();
+    // if (!this.props.isAuthenticated) this.props.history.push("/");
+    this.props.fetchOrders(this.props.idToken);
   }
 
   render() {
     let ordersArray = [];
     console.log("rendering Orders!");
     // console.log(this.state.data);
+    console.log("this.props.orders");
+    console.log(this.props.orders);
     if (this.props.orders) {
       for (let key in this.props.orders) {
-        ordersArray.push({
-          key: key,
-          ingredients: this.props.orders[key]["ingredients"],
-          price: this.props.orders[key]["price"]
-        });
+        if (this.props.orders[key].userName === this.props.userName) {
+          ordersArray.push({
+            date: this.props.orders[key].date,
+            key: key,
+            ingredients: this.props.orders[key]["ingredients"],
+            price: this.props.orders[key]["price"]
+          });
+        }
       }
     }
     console.log("ordersArray");
     console.log(ordersArray);
 
     let orders = ordersArray.map(x => {
-      return <Order key={x.key} ingredients={x.ingredients} price={x.price} />;
+      return (
+        <Order
+          key={x.key}
+          ingredients={x.ingredients}
+          price={x.price}
+          date={x.date}
+        />
+      );
     });
 
-    return this.props.loading ? (
+    let authRedirect = this.props.isAuthenticated ? null : <Redirect to="/" />;
+
+    let ordersContent = this.props.loading ? (
       <Spinner />
     ) : (
       <div> {this.props.orders ? orders : null}</div>
+    );
+
+    return (
+      <React.Fragment>
+        {authRedirect}
+
+        <p style={{ textAlign: "center" }}>
+          Order history for {this.props.userName}
+        </p>
+        {ordersContent}
+      </React.Fragment>
     );
   }
 }
@@ -56,11 +83,14 @@ class Orders extends Component {
 const mapStateToProps = state => ({
   error: state.order.fetchError,
   orders: state.order.orders,
-  loading: state.order.fetchOrdersLoading
+  loading: state.order.fetchOrdersLoading,
+  idToken: state.auth.idToken,
+  isAuthenticated: state.auth.idToken !== null,
+  userName: state.auth.userName
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchOrders: () => dispatch(actions.fetchOrders())
+  fetchOrders: idToken => dispatch(actions.fetchOrders(idToken))
 });
 
 export default connect(

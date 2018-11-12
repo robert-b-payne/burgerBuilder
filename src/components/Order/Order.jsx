@@ -15,6 +15,7 @@ const order = props => {
 
   return (
     <div className={classes.Order}>
+      <p>{props.date}</p>
       <p>Ingredients:</p>
       {ingredients}
       <p>

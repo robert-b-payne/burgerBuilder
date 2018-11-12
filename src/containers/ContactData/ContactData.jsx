@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 // import order from "../../components/Order/Order";
 import * as orderActions from "../../store/actions/index";
 import checkValidity from "../../utility/checkValidity";
+import { withRouter } from "react-router";
 
 class ContactData extends Component {
   state = {
@@ -23,9 +24,28 @@ class ContactData extends Component {
           required: true,
           valid: false,
           rules: {
-            minLength: 3,
-            maxLength: 10
-          }
+            minLength: 2,
+            maxLength: 30
+          },
+          errorMessage: "Name must be between 2 and 30 characters"
+        },
+        value: "",
+        touched: false
+      },
+      phone: {
+        label: "Phone Number",
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Your Name"
+        },
+        validation: {
+          required: true,
+          valid: false,
+          rules: {
+            isPhoneNumber: true
+          },
+          errorMessage: "Must be a valid 10 digit phone number"
         },
         value: "",
         touched: false
@@ -43,9 +63,10 @@ class ContactData extends Component {
           required: true,
           valid: false,
           rules: {
-            minLength: 5,
-            maxLength: 15
-          }
+            minLength: 3,
+            maxLength: 30
+          },
+          errorMessage: "Street must be between 3 and 30 characters"
         }
       },
       zipcode: {
@@ -62,7 +83,8 @@ class ContactData extends Component {
           rules: {
             length: 5,
             isNumeric: true
-          }
+          },
+          errorMessage: "Zipcode must be 5 digits"
         },
         touched: false
       },
@@ -78,31 +100,33 @@ class ContactData extends Component {
           required: true,
           valid: false,
           rules: {
-            minLength: 3,
-            maxLength: 12
-          }
+            minLength: 2,
+            maxLength: 30
+          },
+          errorMessage: "Country must be between 2 and 30 characters"
         },
         touched: false
       },
-      email: {
-        label: "Email",
-        elementType: "input",
-        elementConfig: {
-          type: "email",
-          placeholder: "Email"
-        },
-        value: "",
-        validation: {
-          required: true,
-          valid: false,
-          rules: {
-            minLength: 3,
-            maxLength: 15,
-            isEmail: true
-          }
-        },
-        touched: false
-      },
+      // email: {
+      //   label: "Email",
+      //   elementType: "input",
+      //   elementConfig: {
+      //     type: "email",
+      //     placeholder: "Email"
+      //   },
+      //   value: "",
+      //   validation: {
+      //     required: true,
+      //     valid: false,
+      //     rules: {
+      //       // minLength: 3,
+      //       // maxLength: 15,
+      //       isEmail: true
+      //     },
+      //     errorMessage: "Must be a valid email address"
+      //   },
+      //   touched: false
+      // },
       deliveryMethod: {
         label: "Delivery Method",
         elementType: "select",
@@ -130,64 +154,13 @@ class ContactData extends Component {
     console.log("ContactData mounted!");
     console.log(this.props.ingredients);
     console.log(parseFloat(this.props.totalPrice).toFixed(2));
+    console.log("props");
+    console.log(this.props);
   }
 
-  //  checkValidity = (value, validation) => {
-  //     if (validation.required) {
-  //       for (let key in validation.rules) {
-  //         switch (key) {
-  //           case "minLength":
-  //             if (value.length < validation.rules.minLength) return false;
-  //             break;
-  //           case "maxLength":
-  //             if (value.length > validation.rules.maxLength) return false;
-  //             break;
-  //           case "length":
-  //             if (value.length !== validation.rules.length) return false;
-  //             break;
-  //           default:
-  //             return false;
-  //         }
-  //       }
-  //     }
-  //     return true;
-  //   };
-
   orderHandler = event => {
-    // this.setState({ modalState: "loading" });
     event.preventDefault();
-    //validate all inputs
-    // let objectCopy = JSON.parse(JSON.stringify(this.state.orderForm));
-    // let formValid = true;
-    // for (let key in this.state.orderForm) {
-    //   if (
-    //     this.state.orderForm[key].validation.required &&
-    //     !this.checkValidity(
-    //       this.state.orderForm[key].value,
-    //       this.state.orderForm[key].validation
-    //     )
-    //   ) {
-    //     objectCopy[key].validation.valid = false;
-    //     formValid = false;
-    //   } else objectCopy[key].validation.valid = true;
-    //   objectCopy[key].touched = true;
-    // }
-    // this.setState({ orderForm: objectCopy });
-    // if (!formValid) return;
 
-    //   if (
-    //     this.checkValidity(
-    //       this.state.orderForm[key].value,
-    //       this.state.orderForm[key].validation
-    //     )
-    //   ) {
-    //     this.state.orderForm[key].validation.valid = true;
-    //   } else {
-    //     this.state.orderForm[key].validation.valid = false;
-    //   }
-    // }
-
-    // this.setState({ loading: true });
     const orderForm = {};
     for (let key in this.state.orderForm) {
       orderForm[key] = this.state.orderForm[key].value;
@@ -198,34 +171,10 @@ class ContactData extends Component {
       this.props.ingredients,
       this.props.price,
       orderForm,
-      this.props.history
+      this.props.history,
+      this.props.idToken,
+      this.props.userName
     );
-    // this.setState({ loading: false });
-    // this.props.setResetState(true);
-
-    // axios
-    //   .post("/orders.json", {
-    //     ingredients: this.props.ingredients,
-    //     price: parseFloat(this.props.totalPrice).toFixed(2),
-    //     order_info: orderForm
-    //   })
-    //   .then(res => {
-    //     if (res) {
-    //       console.log("response!");
-    //       console.log(res);
-    //       this.setState({ loading: false });
-    //       this.props.history.push("/");
-    //       // this.setState({ modalState: "order_complete" });
-    //     } else {
-    //       // this.setState({ showModal: false, modalState: "order_summary" });
-    //       this.setState({ loading: false });
-    //       this.props.history.push("/");
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     // this.setState({ showModal: false, modalState: "order_summary" });
-    //   });
   };
 
   changeHandler = (event, id) => {
@@ -344,16 +293,27 @@ const mapStateToProps = state => ({
   orderError: state.orderError,
   ingredients: state.burgerBuilder.ingredients,
   price: state.burgerBuilder.totalPrice,
-  loading: state.order.loading
+  loading: state.order.loading,
+  idToken: state.auth.idToken,
+  userName: state.auth.userName
 });
 
 const mapDispatchToProps = dispatch => ({
-  submitOrder: (ingredients, price, orderForm, history) =>
-    dispatch(orderActions.submitOrder(ingredients, price, orderForm, history)),
+  submitOrder: (ingredients, price, orderForm, history, idToken, userName) =>
+    dispatch(
+      orderActions.submitOrder(
+        ingredients,
+        price,
+        orderForm,
+        history,
+        idToken,
+        userName
+      )
+    ),
   setResetState: val => dispatch(orderActions.setResetState(val))
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ContactData);
+)(withRouter(ContactData));
